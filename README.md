@@ -4,4 +4,4 @@ Matérn Spectral Mixture kernel for Gaussian process models for pitch detection 
 
 By Pablo A. Alvarado, Dan Stowell.
 
-This code provides a complement to the arxiv paper: https:www.google.com
+This code provides a complement to the arxiv paper: https://google.com
