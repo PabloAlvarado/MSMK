@@ -1,6 +1,6 @@
 # MSMK
 
-Matérn Spectral Mixture kernel for Gaussian process models for pitch detection in polyphonic music signals, using Python and GPflow.
+Matérn Spectral Mixture (MSM) kernel for Gaussian process models for pitch detection in polyphonic music signals, using Python and GPflow.
 
 By Pablo A. Alvarado, Dan Stowell.
 
