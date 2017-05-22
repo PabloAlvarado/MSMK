@@ -4,4 +4,4 @@ Matérn Spectral Mixture (MSM) kernel for Gaussian process models applied to pit
 
 By Pablo A. Alvarado, Dan Stowell.
 
-This code provides a complement to the arxiv paper: https://google.com
+This code provides a complement to the arxiv paper: https://arxiv.org/abs/1705.07104
