@@ -11,23 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import numpy as np
-import GPflow
+import gpflow
 import scipy as sp
-import scipy.io as sio
 from scipy.io import wavfile as wav
 from scipy.fftpack import fft
-import tensorflow as tf
 import siggp
-
-
 
 
 def Lorentzian(p, x):
     '''Lorentzian function
     See http://mathworld.wolfram.com/LorentzianFunction.html'''
-    return (p[0]*p[1] / 1.) / ( (4.*np.square(np.pi))*(x - p[2]/(2.*np.pi)) **2. + p[1]**2. )
+    return (p[0]*p[1] / 1.) / ((4.*np.square(np.pi))*(x - p[2]/(2.*np.pi)) **2. + p[1]**2. )
 
 
 
@@ -68,14 +63,14 @@ def ker_msm(s, l, f, Nh):
         f  : frequency vector (Hz)
         Nh : number of components
     Output:
-        GPflow kernel object'''
+        gpflow kernel object'''
     per = 1./(2.*np.pi*f)
-    kexp0 = GPflow.kernels.Matern12(input_dim=1, variance=1.0, lengthscales=l[0])
-    kcos0 = GPflow.kernels.Cosine(input_dim=1, variance=s[0], lengthscales=per[0])
+    kexp0 = gpflow.kernels.Matern12(input_dim=1, variance=1.0, lengthscales=l[0])
+    kcos0 = gpflow.kernels.Cosine(input_dim=1, variance=s[0], lengthscales=per[0])
     ker = kexp0*kcos0
     for n in range (1, Nh):
-        kexp = GPflow.kernels.Matern12(input_dim=1, variance=1.0, lengthscales=l[n])
-        kcos = GPflow.kernels.Cosine(input_dim=1, variance=s[n], lengthscales=per[n])
+        kexp = gpflow.kernels.Matern12(input_dim=1, variance=1.0, lengthscales=l[n])
+        kcos = gpflow.kernels.Cosine(input_dim=1, variance=s[n], lengthscales=per[n])
         ker += kexp*kcos
     return ker
 
@@ -162,8 +157,8 @@ def pitch(filename, windowsize=16000):
     # define kernel components and activations
     k_f1 = ker_msm(s=s1, l=l1, f=f1, Nh=s1.size) #
     k_f2 = ker_msm(s=s2, l=l2, f=f2, Nh=s2.size)
-    k_g1 = GPflow.kernels.Matern12(input_dim=1, lengthscales=1., variance=0.3767)
-    k_g2 = GPflow.kernels.Matern12(input_dim=1, lengthscales=1., variance=0.3767)
+    k_g1 = gpflow.kernels.Matern12(input_dim=1, lengthscales=1., variance=0.3767)
+    k_g2 = gpflow.kernels.Matern12(input_dim=1, lengthscales=1., variance=0.3767)
 
 
     ### Pitch detection

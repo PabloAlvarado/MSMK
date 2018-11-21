@@ -9,10 +9,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import GPflow
+import gpflow
 import tensorflow as tf
 import numpy as np
 import itertools
+
 
 def mvhermgauss(means, covs, H, D):
         """
@@ -24,8 +25,8 @@ def mvhermgauss(means, covs, H, D):
         :return: eval_locations (H**DxNxD), weights (H**D)
         """
         N = tf.shape(means)[0]
-        #gh_x, gh_w = GPflow.kernels.hermgauss(H)
-        gh_x, gh_w = GPflow.likelihoods.hermgauss(H)
+        #gh_x, gh_w = gpflow.kernels.hermgauss(H)
+        gh_x, gh_w = gpflow.likelihoods.hermgauss(H)
         xn = np.array(list(itertools.product(*(gh_x,) * D)))  # H**DxD
         wn = np.prod(np.array(list(itertools.product(*(gh_w,) * D))), 1)  # H**D
         cholXcov = tf.cholesky(covs)  # NxDxD
@@ -35,10 +36,10 @@ def mvhermgauss(means, covs, H, D):
         return Xr, wn * np.pi ** (-D * 0.5)
 
 
-class ModLik(GPflow.likelihoods.Likelihood):
+class ModLik(gpflow.likelihoods.Likelihood):
     def __init__(self):
-        GPflow.likelihoods.Likelihood.__init__(self)
-        self.noise_var = GPflow.param.Param(1.0)
+        gpflow.likelihoods.Likelihood.__init__(self)
+        self.noise_var = gpflow.param.Param(1.0)
 
     def logp(self, F, Y):
         f1, f2, g1, g2 = F[:, 0], F[:, 1], F[:,2], F[:,3]
@@ -47,7 +48,7 @@ class ModLik(GPflow.likelihoods.Likelihood):
         sigma_g1 = 1./(1 + tf.exp(-g1))  # squash g to be positive
         sigma_g2 = 1./(1 + tf.exp(-g2))  # squash g to be positive
         mean = sigma_g1 * f1 + sigma_g2 * f2   #Instead of sigmoid function we use the softmax.
-        return GPflow.densities.gaussian(y, mean, self.noise_var).reshape(-1, 1)
+        return gpflow.densities.gaussian(y, mean, self.noise_var).reshape(-1, 1)
 
     def variational_expectations(self, Fmu, Fvar, Y):
         D = 4  # Number of input dimensions (increased from 2 to 4)
@@ -60,6 +61,6 @@ class ModLik(GPflow.likelihoods.Likelihood):
         sigma_g2 = 1./(1 + tf.exp(-g2))  # squash g to be positive
 
         mean =  sigma_g1 * f1 + sigma_g2 * f2  #Instead of sigmoid function we use the softmax.
-        evaluations = GPflow.densities.gaussian(y, mean, self.noise_var)
+        evaluations = gpflow.densities.gaussian(y, mean, self.noise_var)
         evaluations = tf.transpose(tf.reshape(evaluations, tf.pack([tf.size(w), tf.shape(Fmu)[0]])))
         return tf.matmul(evaluations, w)
